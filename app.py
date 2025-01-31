@@ -40,7 +40,7 @@ def connect_to_gsheets():
     return sheet
 
 # Interfaz en Streamlit
-st.title("Vending Machine Restocking Appp")
+st.title("Vending Machine Restocking Appppp")
 
 user = st.text_input("Enter your name", placeholder="E.g., John Doe")
 machines = ["Machine A", "Machine B", "Machine C", "Machine D"]
