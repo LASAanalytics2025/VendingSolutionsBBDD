@@ -1,7 +1,7 @@
 import streamlit as st
 import gspread
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
+from google_auth_oauthlib.flow import Flow
 from google.auth.transport.requests import Request
 import os
 import pickle
@@ -27,12 +27,22 @@ def authenticate():
                 st.error("Error: No se encontró el archivo 'client_secret.json'. Verifica que esté en el mismo directorio que el script.")
                 return None
 
-            flow = InstalledAppFlow.from_client_secrets_file("client_secret.json", SCOPES)
-            creds = flow.run_local_server(port=0)
+            flow = Flow.from_client_secrets_file(
+                "client_secret.json",
+                scopes=SCOPES,
+                redirect_uri='urn:ietf:wg:oauth:2.0:oob'
+            )
+            auth_url, _ = flow.authorization_url(prompt='consent')
+            st.write('Por favor, visita la siguiente URL para autorizar la aplicación:')
+            st.write(auth_url)
+            code = st.text_input('Introduce el código de autorización:')
+            if code:
+                flow.fetch_token(code=code)
+                creds = flow.credentials
 
-        # Guardar credenciales para futuras sesiones
-        with open("token.pickle", "wb") as token:
-            pickle.dump(creds, token)
+                # Guardar credenciales para futuras sesiones
+                with open("token.pickle", "wb") as token:
+                    pickle.dump(creds, token)
 
     return creds
 
